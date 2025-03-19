@@ -133,8 +133,11 @@ function getCountDaysOnPeriod(dateStart, dateEnd) {
  * '2024-02-02', { start: '2024-02-02', end: '2024-03-02' } => true
  * '2024-02-10', { start: '2024-02-02', end: '2024-03-02' } => true
  */
-function isDateInPeriod(/* date, period */) {
-  throw new Error('Not implemented');
+function isDateInPeriod(date, period) {
+  return (
+    new Date(date) >= new Date(period.start) &&
+    new Date(date) <= new Date(period.end)
+  );
 }
 
 /**
@@ -148,8 +151,8 @@ function isDateInPeriod(/* date, period */) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  return new Date(date).toLocaleString('en-US', { timeZone: 'UTC' });
 }
 
 /**
@@ -164,8 +167,23 @@ function formatDate(/* date */) {
  * 12, 2023 => 10
  * 1, 2024 => 8
  */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  let weekendDays = 0;
+  let newYear = year;
+  let nextMonth = month;
+
+  if (month === 12) {
+    newYear = year + 1;
+    nextMonth = 0;
+  }
+  const daysInMonth = new Date(newYear, nextMonth, 0).getDate();
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const dayOfWeek = new Date(newYear, nextMonth - 1, day).getDay();
+    if (dayOfWeek === 6 || dayOfWeek === 0) {
+      weekendDays += 1;
+    }
+  }
+  return weekendDays;
 }
 
 /**
@@ -181,8 +199,36 @@ function getCountWeekendsInMonth(/* month, year */) {
  * Date(2024, 0, 31) => 5
  * Date(2024, 1, 23) => 8
  */
-function getWeekNumberByDate(/* date */) {
-  throw new Error('Not implemented');
+function getWeekNumberByDate(date) {
+  let daysToMonday;
+  // const newDate = date.getUTCDate();
+  const currentDate = new Date(date);
+  // const xcurrentDate = currentDate.getUTCDate();
+  const year = new Date(date).getFullYear();
+  const isThisLeapYear =
+    (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+
+  const FirstDayOfYear = new Date(year, 0, 1).getDay();
+  const startWeek =
+    FirstDayOfYear === 4 || (FirstDayOfYear === 3 && isThisLeapYear) ? 2 : 1;
+
+  if (FirstDayOfYear > 1) {
+    daysToMonday = 7 - FirstDayOfYear + 1;
+  } else if (FirstDayOfYear < 1) {
+    daysToMonday = 1;
+  } else {
+    daysToMonday = 0;
+  }
+
+  const FirstWeekStart =
+    new Date(year, 0, 1).getTime() + daysToMonday * (24 * 60 * 60 * 1000);
+  const currentDayOfWeek = currentDate.getDay();
+  const monday = currentDayOfWeek === 0 ? -6 : 1;
+  const currentWeekStart =
+    currentDate.getTime() - (currentDayOfWeek - monday) * 24 * 60 * 60 * 1000;
+  return (
+    (currentWeekStart - FirstWeekStart) / (7 * 24 * 60 * 60 * 1000) + startWeek
+  );
 }
 
 /**
@@ -249,8 +295,10 @@ function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
  * Date(2022, 2, 1) => false
  * Date(2020, 2, 1) => true
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  const x = new Date(date);
+  const year = x.getFullYear();
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }
 
 module.exports = {
