@@ -242,8 +242,24 @@ function getWeekNumberByDate(date) {
  * Date(2024, 0, 13) => Date(2024, 8, 13)
  * Date(2023, 1, 1) => Date(2023, 9, 13)
  */
-function getNextFridayThe13th(/* date */) {
-  throw new Error('Not implemented');
+function getNextFridayThe13th(date) {
+  const dateX = new Date(date);
+  let nextFriday13Month = date.getMonth();
+  let nextFriday13;
+  let res;
+
+  const year = dateX.getFullYear();
+  nextFriday13Month =
+    dateX.getDate() >= 13 ? dateX.getMonth() + 1 : dateX.getMonth();
+
+  for (let i = nextFriday13Month; i < 12; i += 1) {
+    nextFriday13 = new Date(year, i, 13);
+    if (nextFriday13.getDay() === 5) {
+      res = nextFriday13;
+      break;
+    }
+  }
+  return res;
 }
 
 /**
@@ -257,8 +273,25 @@ function getNextFridayThe13th(/* date */) {
  * Date(2024, 5, 1) => 2
  * Date(2024, 10, 10) => 4
  */
-function getQuarter(/* date */) {
-  throw new Error('Not implemented');
+function getQuarter(date) {
+  let quater;
+  const newDate = new Date(date);
+  const year = newDate.getFullYear();
+
+  const endQ1 = new Date(year, 3, 0);
+  const endQ2 = new Date(year, 6, 0);
+  const endQ3 = new Date(year, 9, 0);
+
+  if (newDate.getTime() <= endQ1.getTime()) {
+    quater = 1;
+  } else if (newDate.getTime() <= endQ2.getTime()) {
+    quater = 2;
+  } else if (newDate.getTime() <= endQ3.getTime()) {
+    quater = 3;
+  } else {
+    quater = 4;
+  }
+  return quater;
 }
 
 /**
